@@ -29,7 +29,7 @@ app.get('/webhook', (req, res) => {
     
     console.log(`Received verification request: mode=${mode}, token=${token}, challenge=${challenge}`);
     // const verifyToken = process.env.VERIFY_TOKEN || 'your_verify_token_here';
-    const verifyToken = 'EAAKG5ukdBHMBPC0ALZA6NIgl6VDb2nZBGoIvNBGJVO2PHcLSvkhIu49wB5WEd7lNDj8NuLfG72ugnRKjnxOdqxHx4RZABsk79ZAhu8KcotLZBpmpeMsuywEsgtaZCBKwiSFhLXisqwSyK94OJO3StjQ4OX29Vxa6VHvrhKFEIATU27iZCSkHtc5sMf68P6TaSuSgDrUWvAW7IL9Uao5LJtpelvXZCE76QMEePbPS775T0nDWPQZDZD';
+    const verifyToken = process.env.VERIFY_TOKEN || 'my-verify-token';
 
     if (mode && token) {
         if (mode === 'subscribe' && token === verifyToken) {

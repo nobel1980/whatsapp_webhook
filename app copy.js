@@ -1,24 +1,25 @@
 
 const express = require('express');
-const dotenv = require('dotenv');
-dotenv.config();
 // const bodyParser = require('body-parser');
 const axios = require('axios');
+const { useActionState, act } = require('react');
 // const WEBHOOK_VERIFY_TOKEN = process.env.VERIFY_TOKEN || 'my-verify-token';
 const app = express();
 const PORT = process.env.PORT || 3000;
 const verifyToken = process.env.VERIFY_TOKEN || 'my-verify-token';
-// console.log(`Using verify token: ${verifyToken}`);
 
 // Middleware
 app.use(express.json()); // for parsing application/json
-// app.use(bodyParser.json()); // for parsing application/json
-// app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
 
 app.get('/', (req, res) => {
     res.send('WhatsApp Webhook Server');
 });
 
+
+app.get('/webhook1', (req, res) => {
+    console.log (req.query);
+    res.send(); 
+});
 // GET webhook route - typically used for verification by WhatsApp
 app.get('/webhook', (req, res) => {
     // Extract query parameters sent by WhatsApp
@@ -46,7 +47,7 @@ app.get('/webhook', (req, res) => {
 
 // POST webhook route - for receiving messages from WhatsApp
 app.post('/webhook', (req, res) => {
-    //  console.log('Full Payload:', JSON.stringify(req.body, null, 2));
+    // console.log('Full Payload:', JSON.stringify(req.body, null, 2));
 
     const entry = req.body.entry?.[0];
     const changes = entry?.changes?.[0];
@@ -75,17 +76,14 @@ app.post('/webhook', (req, res) => {
         console.log('New Message Received:', messages);
         if (messages.type === 'text') {
             if (messages.text && messages.text.body.toLowerCase() === 'hello') {
+                console.log('Received "hello" message, sending response...');
                 // sendmessage(messages.from, 'Hello! How can I assist you today?');
-                replymessage(messages.from, 'Hello! Welcome to BTRC chatbot. Please choose the language:', messages.id);
+                replymessage(messages.from, 'Hello! How can I assist you today?', messages.id);
             }
+        }
 
-            if (messages.text && messages.text.body.toLowerCase() === 'list') {
-               sendlist(messages.from);
-            }
-
-            if (messages.text && messages.text.body.toLowerCase() === 'language') {
-                languageButtons(messages.from);
-            }
+        if (messages.type === 'list') {
+            sendlist(messages.from);
         }
     } else {
         console.log('No incoming messages (status updates only).');
@@ -128,13 +126,6 @@ app.post('/webhook', (req, res) => {
                 messaging_product: "whatsapp",
                 to: to,
                 type: "interactive",
-                header: {
-                    type: "text",
-                    text: "Choose an option"
-                },
-                body: {
-                    text: "This is interactive message body"
-                },
                 interactive: {
                     type: "list",
                     body: {
@@ -161,7 +152,7 @@ app.post('/webhook', (req, res) => {
                         ]
                     },
                     footer: {
-                        text: "Powered by Genex Infosys PLC"
+                        text: "Powered by Genex Company"
                     }
                 }
             };
@@ -210,63 +201,7 @@ app.post('/webhook', (req, res) => {
     } catch (error) {
         console.error('Error sending message:', error);
     }
-   }
-
-    async function languageButtons(to) {
-        try {
-            const params = {
-                messaging_product: "whatsapp",
-                to: to,
-                type: "interactive",
-                header: {
-                    type: "text",
-                    text: "Choose a language"
-                },
-                interactive: {
-                    type: "button",
-                    body: {
-                        text: "Please select an option:"
-                    },
-                    action: {
-                        buttons: [
-                            {
-                                type: "reply",
-                                reply: {
-                                    id: "option1",
-                                    title: "বাংলা"
-                                }
-                            },
-                            {
-                                type: "reply",
-                                reply: {
-                                    id: "option2",
-                                    title: "English"
-                                }
-                            }
-                        ]
-                    },
-                    footer: {
-                        text: "Powered by Genex Infosys PLC"
-                    }
-                }
-            };
-            const response = await axios.post(
-                'https://graph.facebook.com/v22.0/702045652995953/messages',
-                params,
-                {
-                    headers: {
-                        'Authorization': `Bearer ${verifyToken}`,
-                        'Content-Type': 'application/json'
-                    }
-                }
-            );
-
-            console.log('Message sent successfully:', response.data);
-        } catch (error) {
-            console.error('Error sending message:', error);
-        }
-    }
-
+}
 // Start the server
 app.listen(PORT, () => {
     console.log(`WhatsApp Webhook server running on port ${PORT}`);
