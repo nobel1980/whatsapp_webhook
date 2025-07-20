@@ -97,35 +97,7 @@ app.post('/webhook', (req, res) => {
             replyMessage(from, 'You have selected English. What service do you want next?', messages.id);
             serviceList(from, 'english');
         }
-    } else if (messages.type === 'interactive' && messages.interactive.type === 'list_reply') {
-        const listId = messages.interactive.list_reply.id;
-            if (listId === 'OptoionBtrc') {
-                const lang = userLanguagePreference[from] || 'english';
-                btrcOptions(from, lang);
-            } else if (listId === 'optionMobileOperator') { 
-                const lang = userLanguagePreference[from] || 'english';
-                mobileOperatorOptions(from, lang);
-            } else if (listId === 'optionHelpline') {
-                const lang = userLanguagePreference[from] || 'english';
-                helplineOptions(from, lang);
-            }
-    } else if (messages.type === 'interactive' && messages.interactive.type === 'button_reply') {
-    const buttonId = messages.interactive.button_reply.id;
-
-    if (buttonId === 'btrc_complain_form') {
-        const lang = userLanguagePreference[from] || 'english';
-        const reply = (lang === 'bangla')
-            ? "✅ অভিযোগ ফর্ম: https://btrc.gov.bd/complaint-form"
-            : "✅ Complain Form: https://btrc.gov.bd/complaint-form";
-        sendMessage(from, reply);
-    } else if (buttonId === 'btrc_helpline') {
-        const lang = userLanguagePreference[from] || 'english';
-        const reply = (lang === 'bangla')
-            ? "✅ বিটিআরসি হেল্পলাইন: ১০০ অথবা ১৬২০০ নম্বরে যোগাযোগ করুন।"
-            : "✅ BTRC Helpline: Please call 100 or 16200.";
-        sendMessage(from, reply);
-    }
-} else if (messages.type === 'text') {
+    } else if (messages.type === 'text') {
         const text = messages.text.body.toLowerCase();
         const lang = userLanguagePreference[from] || 'english';
 
@@ -208,15 +180,14 @@ function languageButtons(to) {
     sendWhatsAppMessage(params);
 }
 
+// ✅ Service List (Bangla/English)
 async function serviceList(to, language = 'english') {
     const rows = (language === 'bangla') ? [
-        { id: "OptoionBtrc", title: "বিটিআরসি", description: "বিটিআরসি সম্পর্কিত তথ্য।" },
-        { id: "optionMobileOperator", title: "মোবাইল অপারেটর", description: "মোবাইল অপারেটর সম্পর্কিত তথ্য।" },
-        { id: "optionHelpline", title: "হেল্পলাইন", description: "হেল্পলাইন সম্পর্কিত তথ্য।" }
+        { id: "OptoionPromSms", title: "প্রোমোশনাল এসএমএস বন্ধ", description: "এই অপশন নির্বাচন করে প্রোমোশনাল এসএমএস বন্ধ করতে পারেন।" },
+        { id: "optionMnp", title: "এমএনপি", description: "নম্বর পোর্টেবিলিটি সম্পর্কিত তথ্য।" }
     ] : [
-        { id: "OptoionBtrc", title: "BTRC", description: "Information related to BTRC." },
-        { id: "optionMobileOperator", title: "Mobile Operator", description: "Get information about Mobile Operators." },
-        { id: "optionHelpline", title: "Helpline", description: "Get information about Helpline." }
+        { id: "OptoionPromSms", title: "Stop Promotional SMS", description: "You can stop promotional SMS by selecting this option." },
+        { id: "optionMnp", title: "MNP", description: "Get information about Mobile Number Portability." }
     ];
 
     const params = {
@@ -244,111 +215,6 @@ async function serviceList(to, language = 'english') {
 
     sendWhatsAppMessage(params);
 }
-
-function btrcOptions(to, language = 'english') {
-    const buttons = (language === 'bangla') ? [
-        {
-            type: "reply",
-            reply: {
-                id: "btrc_complain_form",
-                title: "১️⃣ অভিযোগ ফর্ম"
-            }
-        },
-        {
-            type: "reply",
-            reply: {
-                id: "btrc_helpline",
-                title: "২️⃣ বিটিআরসি হেল্পলাইন"
-            }
-        }
-    ] : [
-        {
-            type: "reply",
-            reply: {
-                id: "btrc_complain_form",
-                title: "1️⃣ Complain Form"
-            }
-        },
-        {
-            type: "reply",
-            reply: {
-                id: "btrc_helpline",
-                title: "2️⃣ BTRC Helpline"
-            }
-        }
-    ];
-
-    const params = {
-        messaging_product: "whatsapp",
-        to,
-        type: "interactive",
-        interactive: {
-            type: "button",
-            body: {
-                text: (language === 'bangla') 
-                    ? "বিটিআরসি সম্পর্কিত তথ্যের জন্য একটি অপশন নির্বাচন করুনঃ" 
-                    : "Please select an option for BTRC information:"
-            },
-            action: {
-                buttons
-            }
-        }
-    };
-
-    sendWhatsAppMessage(params);
-}
-function mobileOperatorOptions(to, language = 'english') {
-    const buttons = (language === 'bangla') ? [
-        {
-            type: "reply",
-            reply: {
-                id: "mobile_operator_complain_form",
-                title: "১️⃣ মোবাইল অপারেটর অভিযোগ ফর্ম"
-            }
-        },
-        {
-            type: "reply",
-            reply: {
-                id: "mobile_operator_helpline",
-                title: "২️⃣ মোবাইল অপারেটর হেল্পলাইন"
-            }
-        }
-    ] : [
-        {
-            type: "reply",
-            reply: {
-                id: "mobile_operator_complain_form",
-                title: "1️⃣ Mobile Operator Complain Form"
-            }
-        },
-        {
-            type: "reply",
-            reply: {
-                id: "mobile_operator_helpline",
-                title: "2️⃣ Mobile Operator Helpline"
-            }
-        }
-    ];
-
-    const params = {
-        messaging_product: "whatsapp",
-        to,
-        type: "interactive",
-        interactive: {
-            type: "button",
-            body: {
-                text: (language === 'bangla') 
-                    ? "মোবাইল অপারেটর সম্পর্কিত তথ্যের জন্য একটি অপশন নির্বাচন করুনঃ" 
-                    : "Please select an option for Mobile Operator information:"
-            },
-            action: {
-                buttons
-            }
-        }
-    };
-
-    sendWhatsAppMessage(params);
-}   
 
 // ✅ Start server
 app.listen(PORT, () => console.log(`🚀 WhatsApp Webhook server running on port ${PORT}`));
