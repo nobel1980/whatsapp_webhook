@@ -71,23 +71,30 @@ app.post('/webhook', (req, res) => {
         console.log('No status updates.');
     }
 
-    if (messages) {
-        console.log('New Message Received:', messages);
-        if (messages.type === 'text') {
-            if (messages.text && messages.text.body.toLowerCase() === 'hello') {
-                // sendmessage(messages.from, 'Hello! How can I assist you today?');
-                replymessage(messages.from, 'Hello! Welcome to BTRC chatbot. Please choose the language:', messages.id);
-            }
+if (messages) {
+    console.log('New Message Received:', messages);
 
-            if (messages.text && messages.text.body.toLowerCase() === 'list') {
-               sendlist(messages.from);
-            }
-
-            if (messages.text && messages.text.body.toLowerCase() === 'language') {
-                languageButtons(messages.from);
+    if (messages.type === 'interactive') {
+        const interactiveType = messages.interactive.type;
+        if (interactiveType === 'button_reply') {
+            const buttonId = messages.interactive.button_reply.id;
+            if (buttonId === 'optionBangla') {
+                serviceList(messages.from, 'আপনি বাংলা ভাষা নির্বাচন করেছেন। কিভাবে সাহায্য করতে পারি?');
+            } else if (buttonId === 'optionEnglish') {
+                serviceList(messages.from, 'You have selected English. How can I assist you?');
             }
         }
-    } else {
+    } else if (messages.type === 'text') {
+        const textBody = messages.text.body.toLowerCase();
+        if (textBody === 'hello') {
+            languageButtons(messages.from);
+        } else if (textBody === 'list') {
+            sendlist(messages.from);
+        } else if (textBody === 'language') {
+            languageButtons(messages.from);
+        }
+    }
+} else {
         console.log('No incoming messages (status updates only).');
     }
 
@@ -116,13 +123,14 @@ app.post('/webhook', (req, res) => {
                 }
             );
 
-            console.log('Message sent successfully:', response.data);
+            // console.log('Message sent successfully:', response.data);
+            // languageButtons(messages.from);
         } catch (error) {
             console.error('Error sending message:', error);
         }
     }
 
-    async function sendlist(to) {
+    async function serviceList(to) {
         try {
             const params = {
                 messaging_product: "whatsapp",
@@ -138,7 +146,7 @@ app.post('/webhook', (req, res) => {
                 interactive: {
                     type: "list",
                     body: {
-                        text: "Please select an option:"
+                        text: "Please select a services you want:"
                     },
                     action: {
                         button: "View Options",
@@ -147,14 +155,14 @@ app.post('/webhook', (req, res) => {
                                 title: "Option 1",
                                 rows: [
                                     {
-                                        id: "option1",
-                                        title: "Option 1",
-                                        description: "Description for Option 1"
+                                        id: "OptoionPromSms",
+                                        title: "Stop Promotional SMS",
+                                        description: "You may stop promotional SMS by selecting this option"
                                     },
                                     {
-                                        id: "option2",
-                                        title: "Option 2",
-                                        description: "Description for Option 2"
+                                        id: "optionMnp",
+                                        title: "MNP",
+                                        description: "Description for MNP"
                                     }
                                 ]
                             }
@@ -220,26 +228,26 @@ app.post('/webhook', (req, res) => {
                 type: "interactive",
                 header: {
                     type: "text",
-                    text: "Choose a language"
+                    text: "Hello! Welcome to BTRC chatbot. Please choose the language:"
                 },
                 interactive: {
                     type: "button",
                     body: {
-                        text: "Please select an option:"
+                        text: "Hello! Welcome to BTRC chatbot. Please choose the language:"
                     },
                     action: {
                         buttons: [
                             {
                                 type: "reply",
                                 reply: {
-                                    id: "option1",
+                                    id: "optionBangla",
                                     title: "বাংলা"
                                 }
                             },
                             {
                                 type: "reply",
                                 reply: {
-                                    id: "option2",
+                                    id: "optionEnglish",
                                     title: "English"
                                 }
                             }
