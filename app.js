@@ -96,7 +96,43 @@ app.post('/webhook', (req, res) => {
             userLanguagePreference[from] = 'english';
             replyMessage(from, 'You have selected English. What service do you want next?', messages.id);
             serviceList(from, 'english');
-        }
+        }else if (buttonId === 'btrc_complain_form') {
+            const lang = userLanguagePreference[from] || 'english';
+            const reply = (lang === 'bangla') 
+                ? "অভিযোগ ফর্ম লিংক:\nhttps://btrc.gov.bd/complaint-form"
+                : "Complain Form Link:\nhttps://btrc.gov.bd/complaint-form";
+            sendMessage(from, reply);
+        }else if (buttonId === 'btrc_helpline') {
+            const lang = userLanguagePreference[from] || 'english';
+            const reply = (lang === 'bangla')
+                ? "বিটিআরসি হেল্পলাইন: ১০০ অথবা ১৬২০০ নম্বরে যোগাযোগ করুন।"
+                : "BTRC Helpline: Please call 100 or 16200.";
+            sendMessage(from, reply);
+        }else if (buttonId === 'mobile_operator_complain_form') {
+            const lang = userLanguagePreference[from] || 'english';
+            const reply = (lang === 'bangla')
+                ? "মোবাইল অপারেটর অভিযোগ ফর্ম: \nhttps://btrc.gov.bd/mobile-operator-complaint-form"
+                : "Mobile Operator Complain Form: \nhttps://btrc.gov.bd/mobile-operator-complaint-form";
+            sendMessage(from, reply);
+        } else if (buttonId === 'mobile_operator_helpline') {
+            const lang = userLanguagePreference[from] || 'english';
+            const reply = (lang === 'bangla')
+                ? "মোবাইল অপারেটর হেল্পলাইন: আপনার মোবাইল অপারেটরের হেল্পলাইন নম্বরে যোগাযোগ করুন।"
+                : "Mobile Operator Helpline: Please contact your mobile operator's helpline.";
+            sendMessage(from, reply);
+        }  else if (buttonId === 'mnp_complain_form') {
+            const lang = userLanguagePreference[from] || 'english';
+            const reply = (lang === 'bangla')
+                ? "এমএনপি অভিযোগ ফর্ম: \nhttps://btrc.gov.bd/mnp-complaint-form"
+                : "MNP Complain Form: \nhttps://btrc.gov.bd/mnp-complaint-form";
+            sendMessage(from, reply);
+        } else if (buttonId === 'mnp_helpline') {
+            const lang = userLanguagePreference[from] || 'english';
+            const reply = (lang === 'bangla')
+                ? "এমএনপি হেল্পলাইন: ১৬২৪৫ নম্বরে যোগাযোগ করুন।"
+                : "MNP Helpline: Please call 16245.";
+            sendMessage(from, reply);
+        } 
     } else if (messages.type === 'interactive' && messages.interactive.type === 'list_reply') {
         const listId = messages.interactive.list_reply.id;
             if (listId === 'OptoionBtrc') {
@@ -108,37 +144,31 @@ app.post('/webhook', (req, res) => {
             } else if (listId === 'optionHelpline') {
                 const lang = userLanguagePreference[from] || 'english';
                 helplineOptions(from, lang);
+            }else if (listId === 'optionMnp') {
+                const lang = userLanguagePreference[from] || 'english';
+                mnpOptions(from, lang);
+            } else if (listId === 'optionOther') {
+                const lang = userLanguagePreference[from] || 'english';
+                if (lang === 'bangla') {
+                    sendMessage(from, 'অনুগ্রহ করে আপনার প্রশ্নটি লিখুন।');
+                } else {
+                    sendMessage(from, 'Please type your query.');
+                }
+            }   
+    } else if (messages.type === 'text') {
+            const text = messages.text.body.toLowerCase();
+            const lang = userLanguagePreference[from] || 'english';
+
+            if (text === 'hello') {
+                languageButtons(from);
+            } else if (text === 'list') {
+                if (lang === 'bangla') sendMessage(from, 'এটি বাংলা সার্ভিস তালিকা।');
+                else sendMessage(from, 'This is the English service list.');
+            } else {
+                if (lang === 'bangla') sendMessage(from, 'আপনার বার্তা বুঝতে পারিনি। দয়া করে সঠিক ইনপুট দিন।');
+                else sendMessage(from, 'Sorry, I did not understand your message.');
             }
-    } else if (messages.type === 'interactive' && messages.interactive.type === 'button_reply') {
-    const buttonId = messages.interactive.button_reply.id;
-
-    if (buttonId === 'btrc_complain_form') {
-        const lang = userLanguagePreference[from] || 'english';
-        const reply = (lang === 'bangla')
-            ? "✅ অভিযোগ ফর্ম: https://btrc.gov.bd/complaint-form"
-            : "✅ Complain Form: https://btrc.gov.bd/complaint-form";
-        sendMessage(from, reply);
-    } else if (buttonId === 'btrc_helpline') {
-        const lang = userLanguagePreference[from] || 'english';
-        const reply = (lang === 'bangla')
-            ? "✅ বিটিআরসি হেল্পলাইন: ১০০ অথবা ১৬২০০ নম্বরে যোগাযোগ করুন।"
-            : "✅ BTRC Helpline: Please call 100 or 16200.";
-        sendMessage(from, reply);
-    }
-} else if (messages.type === 'text') {
-        const text = messages.text.body.toLowerCase();
-        const lang = userLanguagePreference[from] || 'english';
-
-        if (text === 'hello') {
-            languageButtons(from);
-        } else if (text === 'list') {
-            if (lang === 'bangla') sendMessage(from, 'এটি বাংলা সার্ভিস তালিকা।');
-            else sendMessage(from, 'This is the English service list.');
-        } else {
-            if (lang === 'bangla') sendMessage(from, 'আপনার বার্তা বুঝতে পারিনি। দয়া করে সঠিক ইনপুট দিন।');
-            else sendMessage(from, 'Sorry, I did not understand your message.');
         }
-    }
 
     res.status(200).send('Webhook received');
 });
@@ -210,13 +240,17 @@ function languageButtons(to) {
 
 async function serviceList(to, language = 'english') {
     const rows = (language === 'bangla') ? [
-        { id: "OptoionBtrc", title: "বিটিআরসি", description: "বিটিআরসি সম্পর্কিত তথ্য।" },
+        { id: "OptoionBtrc", title: "বিটিআরসি", description: "বাংলাদেশ টেলিযোগাযোগ নিয়ন্ত্রণ কমিশন সম্পর্কিত তথ্য।" },
         { id: "optionMobileOperator", title: "মোবাইল অপারেটর", description: "মোবাইল অপারেটর সম্পর্কিত তথ্য।" },
-        { id: "optionHelpline", title: "হেল্পলাইন", description: "হেল্পলাইন সম্পর্কিত তথ্য।" }
+        { id: "optionHelpline", title: "হেল্পলাইন", description: "হেল্পলাইন সম্পর্কিত তথ্য।" },
+        { id: "optionMnp", title: "প্রমোশনাল এসএমএস/কল বন্ধ", description: "প্রমোশনাল এসএমএস/কল বন্ধ সম্পর্কিত তথ্য।" },
+        { id: "optionOther", title: "অন্যান্য", description: "অন্যান্য সেবা সম্পর্কিত তথ্য।" }
     ] : [
         { id: "OptoionBtrc", title: "BTRC", description: "Information related to BTRC." },
-        { id: "optionMobileOperator", title: "Mobile Operator", description: "Get information about Mobile Operators." },
-        { id: "optionHelpline", title: "Helpline", description: "Get information about Helpline." }
+        { id: "optionMobileOperator", title: "Mobile Operator", description: "Information about Mobile Operators." },
+        { id: "optionHelpline", title: "Helpline", description: "Information about Helpline." },
+        { id: "optionMnp", title: "SMS/Call Block", description: "Information about blocking promotional SMS/Calls." },
+        { id: "optionOther", title: "Other", description: "Information about other services." }
     ];
 
     const params = {
@@ -251,14 +285,14 @@ function btrcOptions(to, language = 'english') {
             type: "reply",
             reply: {
                 id: "btrc_complain_form",
-                title: "১️⃣ অভিযোগ ফর্ম"
+                title: "অভিযোগ ফর্ম"
             }
         },
         {
             type: "reply",
             reply: {
                 id: "btrc_helpline",
-                title: "২️⃣ বিটিআরসি হেল্পলাইন"
+                title: "বিটিআরসি হেল্পলাইন"
             }
         }
     ] : [
@@ -266,14 +300,14 @@ function btrcOptions(to, language = 'english') {
             type: "reply",
             reply: {
                 id: "btrc_complain_form",
-                title: "1️⃣ Complain Form"
+                title: "Complain Form"
             }
         },
         {
             type: "reply",
             reply: {
                 id: "btrc_helpline",
-                title: "2️⃣ BTRC Helpline"
+                title: "BTRC Helpline"
             }
         }
     ];
@@ -303,14 +337,14 @@ function mobileOperatorOptions(to, language = 'english') {
             type: "reply",
             reply: {
                 id: "mobile_operator_complain_form",
-                title: "১️⃣ মোবাইল অপারেটর অভিযোগ ফর্ম"
+                title: "মোবাইল অপারেটর অভিযোগ ফর্ম"
             }
         },
         {
             type: "reply",
             reply: {
                 id: "mobile_operator_helpline",
-                title: "২️⃣ মোবাইল অপারেটর হেল্পলাইন"
+                title: "মোবাইল অপারেটর হেল্পলাইন"
             }
         }
     ] : [
@@ -318,14 +352,14 @@ function mobileOperatorOptions(to, language = 'english') {
             type: "reply",
             reply: {
                 id: "mobile_operator_complain_form",
-                title: "1️⃣ Mobile Operator Complain Form"
+                title: "Mobile Operator Complain Form"
             }
         },
         {
             type: "reply",
             reply: {
                 id: "mobile_operator_helpline",
-                title: "2️⃣ Mobile Operator Helpline"
+                title: "Mobile Operator Helpline"
             }
         }
     ];
