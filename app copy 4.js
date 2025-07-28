@@ -574,63 +574,64 @@ function helplineOptions(to, language = 'english') {
 }
 
 function mobileOperatorHelpline(to, language = 'english') {
-    const isBangla = (language === 'bangla');
-
+    const buttons = (language === 'bangla') ? [
+        {
+            type: "reply",
+            reply: {
+                id: "gp_helpline",
+                title: "গ্রামীণফোন হেল্পলাইন"
+            }, 
+            type: "reply",
+            reply: {
+                id: "robi_helpline",
+                title: "রবির হেল্পলাইন"
+            }, reply: {
+                id: "banglalink_helpline",
+                title: "বাংলালিংক হেল্পলাইন"
+            }, reply: {
+                id: "teletalk_helpline",
+                title: "টেলিটক হেল্পলাইন"
+            }   
+        }
+    ] : [
+        {
+            type: "reply",
+            reply: {
+                id: "gp_helpline",
+                title: "Grameenphone Helpline"
+            },
+            type: "reply",
+            reply: {
+                id: "robi_helpline",
+                title: "Robi Helpline"
+            }, 
+            reply: {
+                id: "banglalink_helpline",
+                title: "Banglalink Helpline"
+            }, reply: {
+                id: "teletalk_helpline",
+                title: "Teletalk Helpline"
+            }
+        }
+    ];  
+    
     const params = {
         messaging_product: "whatsapp",
         to,
         type: "interactive",
         interactive: {
-            type: "list",
-            header: {
-                type: "text",
-                text: isBangla ? "মোবাইল অপারেটর হেল্পলাইন" : "Mobile Operator Helpline"
-            },
+            type: "button",
             body: {
-                text: isBangla
-                    ? "হেল্পলাইন পেতে নিচের অপশন থেকে একটি নির্বাচন করুন:"
-                    : "Please select a mobile operator to get its helpline:"
-            },
-            footer: {
-                text: isBangla ? "বিটিআরসি হেল্পডেস্ক" : "BTRC Helpdesk"
+                text: (language === 'bangla') 
+                    ? "মোবাইল অপারেটর হেল্পলাইন সম্পর্কিত তথ্যের জন্য অপশন নির্বাচন করুনঃ" 
+                    : "Please select an option for Mobile Operator Helpline:"
             },
             action: {
-                button: isBangla ? "অপশন নির্বাচন করুন" : "Choose Option",
-                sections: [
-                    {
-                        title: isBangla ? "মোবাইল অপারেটর" : "Mobile Operators",
-                        rows: [
-                            {
-                                id: "gp_helpline",
-                                title: isBangla ? "গ্রামীণফোন হেল্পলাইন" : "Grameenphone Helpline",
-                                description: ""
-                            },
-                            {
-                                id: "robi_helpline",
-                                title: isBangla ? "রবির হেল্পলাইন" : "Robi Helpline",
-                                description: ""
-                            },
-                            {
-                                id: "banglalink_helpline",
-                                title: isBangla ? "বাংলালিংক হেল্পলাইন" : "Banglalink Helpline",
-                                description: ""
-                            },
-                            {
-                                id: "teletalk_helpline",
-                                title: isBangla ? "টেলিটক হেল্পলাইন" : "Teletalk Helpline",
-                                description: ""
-                            }
-                        ]
-                    }
-                ]
+                buttons
             }
         }
     };
-
-    sendWhatsAppMessage(params);
-}
-
-       
+}        
 
 // ✅ Start server
 app.listen(PORT, () => console.log(`🚀 WhatsApp Webhook server running on port ${PORT}`));
