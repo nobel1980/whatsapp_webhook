@@ -162,7 +162,19 @@ app.post('/webhook', (req, res) => {
         }   
     } else if (messages.type === 'interactive' && messages.interactive.type === 'list_reply') {
         const listId = messages.interactive.list_reply.id;
-            if (listId === 'OptoionBtrc') {
+            if (listId === 'gp_helpline') {
+                const lang = userLanguagePreference[from] || 'english';
+                const reply = (lang === 'bangla')
+                    ? "গ্রামীণফোন হেল্পলাইন: 121 নম্বরে যোগাযোগ করুন।"
+                    : "Grameenphone Helpline: Please call 121.";
+                sendMessage(from, reply);
+            } else if(listId === 'robi_helpline') {
+                const lang = userLanguagePreference[from] || 'english';
+                const reply = (lang === 'bangla')
+                    ? "রবির হেল্পলাইন: 123 অথবা 01819-400400 নম্বরে যোগাযোগ করুন।"
+                    : "Robi Helpline: Please call 123 or 01819-400400.";
+                sendMessage(from, reply);
+            } else if (listId === 'OptionBtrc') {
                 const lang = userLanguagePreference[from] || 'english';
                 btrcOptions(from, lang);
             } else if (listId === 'optionMobileOperator') { 
@@ -267,13 +279,13 @@ function languageButtons(to) {
 
 async function serviceList(to, language = 'english') {
     const rows = (language === 'bangla') ? [
-        { id: "OptoionBtrc", title: "বিটিআরসি", description: "বাংলাদেশ টেলিযোগাযোগ নিয়ন্ত্রণ কমিশন সম্পর্কিত তথ্য।" },
+        { id: "OptionBtrc", title: "বিটিআরসি", description: "বাংলাদেশ টেলিযোগাযোগ নিয়ন্ত্রণ কমিশন সম্পর্কিত তথ্য।" },
         { id: "optionMobileOperator", title: "মোবাইল অপারেটর", description: "মোবাইল অপারেটর সম্পর্কিত তথ্য।" },
         { id: "optionHelpline", title: "হেল্পলাইন", description: "হেল্পলাইন সম্পর্কিত তথ্য।" },
         { id: "optionMnp", title: "প্রমোশনাল এসএমএস/কল বন্ধ", description: "প্রমোশনাল এসএমএস/কল বন্ধ সম্পর্কিত তথ্য।" },
         { id: "optionOther", title: "অন্যান্য", description: "অন্যান্য সেবা সম্পর্কিত তথ্য।" }
     ] : [
-        { id: "OptoionBtrc", title: "BTRC", description: "Information related to BTRC." },
+        { id: "OptionBtrc", title: "BTRC", description: "Information related to BTRC." },
         { id: "optionMobileOperator", title: "Mobile Operator", description: "Information about Mobile Operators." },
         { id: "optionHelpline", title: "Helpline", description: "Information about Helpline." },
         { id: "optionMnp", title: "SMS/Call Block", description: "Information about blocking promotional SMS/Calls." },
